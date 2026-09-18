@@ -1,213 +1,225 @@
-# LinkedIn_Scraping
-LinkedIn profile scraper built with Python and Selenium to collect up to 80 Tunisia-based profiles in IT, Data, AI, and related fields, with automatic CSV export.
+<h1 align="center">LinkedIn Profile Scraper – Tunisia</h1>
 
+<p align="center">
+  A Python &amp; Selenium tool that collects up to <b>80 Tunisia-based LinkedIn profiles</b> in <b>IT, Data and AI</b>, classifies them by domain, and exports everything to a clean CSV file.
+</p>
 
-LinkedIn Profile Scraper – Tunisia
+<p align="center">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white">
+  <img alt="Selenium" src="https://img.shields.io/badge/Selenium-automation-43B02A?logo=selenium&logoColor=white">
+  <img alt="Google Chrome" src="https://img.shields.io/badge/Google%20Chrome-required-4285F4?logo=googlechrome&logoColor=white">
+  <img alt="Output" src="https://img.shields.io/badge/Output-CSV-success">
+  <img alt="Purpose" src="https://img.shields.io/badge/Purpose-Educational-blueviolet">
+</p>
 
-A Python-based LinkedIn profile scraping tool using Selenium to collect up to 80 profiles located in Tunisia and related to IT, Data, Artificial Intelligence, and related fields.
+---
 
-The collected information is automatically stored in a CSV file for further analysis and processing.
+## Table of Contents
 
---- Features ---
-🔎 Searches LinkedIn profiles using a predefined search keyword.
-🇹🇳 Collects profiles from Tunisia.
-💻 Focuses on IT, Data, AI, and related technical fields.
-🎯 Collects up to 80 profiles.
-🧠 Automatically identifies the profile domain as:
-DATA
-AI
-IT
-or a combination of these domains.
-🔍 Detects whether Open To Work is visible in the search result.
-👤 Extracts information such as:
-Name
-Position
-Location
-Domain
-Open To Work status
-LinkedIn profile URL
-Additional information
-💾 Automatically creates and updates a CSV file.
-🔄 Includes profile deduplication to avoid saving the same profile multiple times.
-📄 Automatically navigates through LinkedIn search result pages.
+- [Overview](#overview)
+- [Features](#features)
+- [How It Works](#how-it-works)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Output](#output)
+- [Domain Detection](#domain-detection)
+- [Open To Work Detection](#open-to-work-detection)
+- [Deduplication](#deduplication)
+- [Debugging](#debugging)
+- [Limitations](#limitations)
+- [Legal & Privacy Disclaimer](#legal--privacy-disclaimer)
+- [Author](#author)
 
---- Technologies ---
-Python
-Selenium
-Google Chrome
-CSV
-Pathlib
+---
 
---- Requirements ---
+## Overview
 
-Make sure Python is installed on your computer.
+This project automates the collection of public profile information from LinkedIn search results. It targets professionals located in **Tunisia** who work in **IT, Data, Artificial Intelligence**, and related technical fields.
 
-Install Selenium with:
+Every collected profile is classified by domain, checked for an *Open To Work* indicator, deduplicated, and written to a CSV file ready for further analysis and processing.
 
+## Features
+
+- 🔎 Searches LinkedIn profiles using a predefined keyword
+- 🇹🇳 Focuses on profiles located in Tunisia
+- 🧠 Automatically classifies each profile as **DATA**, **AI**, **IT**, or a combination of these
+- 🟢 Detects whether *Open To Work* is visible in the search result
+- 📄 Extracts name, position, location, domain, Open To Work status, profile URL and additional information
+- ♻️ Built-in profile deduplication
+- 📑 Automatic pagination through the search results (up to 15 pages)
+- 💾 Automatic creation and update of the CSV file
+- 🐞 Automatic HTML dump for debugging when no results are detected
+
+## How It Works
+
+```mermaid
+flowchart TD
+    A([Run the script]) --> B[Chrome opens the LinkedIn login page]
+    B --> C[Credentials are filled in automatically]
+    C --> D[Search results page opens]
+    D --> E["🖐 Manual step: apply the Tunisia location filter"]
+    E --> F[Press ENTER in the terminal]
+    F --> G[Read profiles on the current results page]
+    G --> H{"Matches DATA / AI / IT keywords?"}
+    H -- No --> I[Skip profile]
+    H -- Yes --> J{Already collected?}
+    J -- Yes --> I
+    J -- No --> K[Classify domain + detect Open To Work]
+    K --> L[Append to CSV]
+    L --> M{"80 profiles or 15 pages reached?"}
+    I --> M
+    M -- No --> N[Go to next results page]
+    N --> G
+    M -- Yes --> O([Done: candidats_linkedin.csv])
+```
+
+## Tech Stack
+
+| Tool | Purpose |
+|------|---------|
+| **Python** | Core language |
+| **Selenium** | Browser automation |
+| **Google Chrome** | Browser used by Selenium |
+| **CSV** | Output format |
+| **Pathlib** | File path handling |
+
+## Getting Started
+
+### Prerequisites
+
+- [Python](https://www.python.org/downloads/) installed on your machine
+- A compatible version of **Google Chrome**
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/salmaa16/LinkedIn_Scraping.git
+cd LinkedIn_Scraping
+
+# 2. Install the dependency
 pip install selenium
+```
 
-A compatible version of Google Chrome is also required.
+### Configuration
 
---- Configuration ---
+Open the Python file and replace the placeholders with your own LinkedIn credentials:
 
-Before running the script, open the Python file and replace:
-
+```python
 EMAIL_LINKEDIN = "YOUR_EMAIL_HERE"
 MOT_DE_PASSE_LINKEDIN = "YOUR_PASSWORD_HERE"
+```
 
-with your LinkedIn credentials.
+> [!WARNING]
+> Never commit your real credentials to GitHub. Keep the placeholders in the version you push, and only add your real values locally.
 
---- How to Use ---
-1. Configure your credentials
+## Usage
 
-Enter your LinkedIn email and password in the configuration section of the script.
+**1. Run the script**
 
-2. Run the Python script
+```bash
+python scraping_linkedin.py
+```
 
-Run:
+Chrome opens and the script fills in the LinkedIn login form.
 
-python your_script_name.py
+**2. Apply the Tunisia filter manually**
 
-The script will open Google Chrome and access the LinkedIn login page.
+Once the search page is open, the terminal asks you to:
 
-3. LinkedIn login
+1. Open the **Locations** filter
+2. Select **Tunisia**
+3. Apply the filter
+4. Leave the existing search keywords unchanged
+5. Return to the terminal and press **ENTER**
 
-The script fills in the LinkedIn email and password fields.
+> [!NOTE]
+> The Tunisia location filter is handled manually on purpose.
 
-The login process is then completed through LinkedIn.
+**3. Collection starts**
 
-4. Apply the Tunisia filter manually
+After you press ENTER, the script reads the displayed search results and keeps only profiles matching the predefined DATA, AI or IT keywords.
 
-After the search page is opened, the program asks the user to manually:
+| Limit | Value |
+|-------|-------|
+| Maximum profiles collected | **80** |
+| Maximum result pages visited | **15** |
 
-Open the Locations filter.
-Select Tunisia.
-Apply the filter.
-Keep the existing data search unchanged.
-Return to the terminal.
-Press ENTER to start the collection.
+## Output
 
-The Tunisia location filter is intentionally handled manually.
+Profiles are saved automatically to **`candidats_linkedin.csv`**.
 
-5. Profile collection
+| Column | Description |
+|--------|-------------|
+| `Nom` | Profile name |
+| `Poste` | Current or displayed position |
+| `Localisation` | Profile location |
+| `Domaine` | Detected domain: `DATA`, `AI`, `IT` (or a combination) |
+| `Open To Work` | Open To Work status, when detected |
+| `URL LinkedIn` | LinkedIn profile URL |
+| `Informations` | Additional extracted information |
 
-Once the user presses ENTER, the script starts collecting profiles from the displayed LinkedIn search results.
+**Illustrative example (fictional data):**
 
-Only profiles matching the predefined DATA, AI, or IT keywords are retained.
+| Nom | Poste | Localisation | Domaine | Open To Work | URL LinkedIn |
+|-----|-------|--------------|---------|--------------|--------------|
+| Jane Doe | Data Engineer | Tunis, Tunisia | DATA | Détecté | `https://www.linkedin.com/in/...` |
+| John Smith | Full Stack Developer | Sfax, Tunisia | IT | Non détecté | `https://www.linkedin.com/in/...` |
 
-The script can collect up to 80 profiles and can navigate through a maximum of 15 search result pages.
+## Domain Detection
 
-6. CSV output
+The script relies on predefined keyword lists to decide whether a profile is relevant and which domain it belongs to.
 
-The collected profiles are automatically saved into:
+| Domain | Example keywords |
+|--------|------------------|
+| **DATA** | Data Analyst, Data Scientist, Data Engineer, Business Intelligence, Business Analyst, Power BI, SQL, Data Warehouse, ETL, Analytics, Data Mining |
+| **AI** | Artificial Intelligence, AI Engineer, Machine Learning, Deep Learning, Computer Vision, NLP, Generative AI, LLM, Neural Networks, Robotics |
+| **IT** | Software Engineer, Software Developer, Web Developer, DevOps, Cloud, Cybersecurity, System Administrator, Network Engineer, Full Stack, Frontend, Backend, Java, Python, JavaScript, PHP, C++ |
 
-candidats_linkedin.csv
+A profile matching several lists receives a combined domain label.
 
-The CSV contains:
+## Open To Work Detection
 
-Column	Description
-Nom	Profile name
-Poste	Current position or displayed position
-Localisation	Profile location
-Domaine	Detected domain: DATA, AI, IT
-Open To Work	Open To Work status when detected
-URL LinkedIn	LinkedIn profile URL
-Informations	Additional extracted information
-Domain Detection
+The script scans the visible text of each search result for *Open To Work* expressions. The column value is either:
 
-The script uses predefined keyword lists to identify relevant profiles.
+- `Détecté`
+- `Non détecté`
 
-DATA
+## Deduplication
 
-Examples include:
+To avoid saving the same person twice:
 
-Data Analyst
-Data Scientist
-Data Engineer
-Business Intelligence
-Business Analyst
-Power BI
-SQL
-Data Warehouse
-ETL
-Analytics
-Data Mining
-AI
+1. If the **LinkedIn profile URL** is available, it is used as the unique key.
+2. Otherwise, the script falls back to a combination of **name + position + location + additional information**.
 
-Examples include:
+## Debugging
 
-Artificial Intelligence
-AI Engineer
-Machine Learning
-Deep Learning
-Computer Vision
-NLP
-Generative AI
-LLM
-Neural Networks
-Robotics
-IT
+If no profile results are detected, the script saves the current page source to:
 
-Examples include:
-
-Software Engineer
-Software Developer
-Web Developer
-DevOps
-Cloud
-Cybersecurity
-System Administrator
-Network Engineer
-Full Stack
-Frontend
-Backend
-Java
-Python
-JavaScript
-PHP
-C++
-Open To Work Detection
-
-The script checks the visible text associated with each search result for expressions related to Open To Work.
-
-Possible result:
-
-Détecté
-
-or:
-
-Non détecté
-Data Deduplication
-
-The script attempts to prevent duplicate profiles from being stored.
-
-When a LinkedIn profile URL is available, the URL is used for deduplication.
-
-If the URL is not available, the script uses a combination of:
-
-Name
-Position
-Location
-Additional information
-Debugging
-
-If no profile results are detected, the script automatically saves the current LinkedIn page source into:
-
+```
 linkedin_debug_final.html
+```
 
-This file can be useful for debugging changes in the LinkedIn page structure.
+Use this file to inspect the page and identify changes in LinkedIn's structure.
 
---- Important Notes ---
+## Limitations
 
-This project is intended for educational and research purposes.
+- LinkedIn regularly changes its page structure, so Selenium selectors may need updates over time.
+- The script was built around the interface observed during development and may not work unchanged after an interface change.
+- The Tunisia location filter must be applied manually.
+- Collection is capped at 80 profiles and 15 result pages per run.
 
-LinkedIn's website structure and terms of service may change over time. As a result, Selenium selectors or page elements used by the script may require updates.
+## Legal & Privacy Disclaimer
 
-The script is designed around the LinkedIn page structure observed during development and may not work unchanged if LinkedIn modifies its interface.
+This project is intended for **educational and research purposes only**.
 
-Users are responsible for using the tool in accordance with LinkedIn's applicable terms, policies, and local laws.
+- Automated data collection may conflict with [LinkedIn's User Agreement](https://www.linkedin.com/legal/user-agreement), and using automation on your account can lead to restrictions. Use it at your own risk.
+- The generated CSV contains personal data. Do **not** publish it, and do not push `candidats_linkedin.csv` or `linkedin_debug_final.html` to a public repository (add them to your `.gitignore`).
+- You are responsible for using this tool in accordance with LinkedIn's terms and policies and with applicable local data-protection laws.
 
+## Author
 
---- Author ---
+Developed as a Python / Selenium scraping project for collecting and analyzing LinkedIn profile data related to IT, Data and Artificial Intelligence.
 
-Developed as a Python/Selenium scraping project for collecting and analyzing LinkedIn profile data related to IT, Data, and Artificial Intelligence.
+**salma ayachi** · [GitHub](https://github.com/salmaa16) · [LinkedIn](https://www.linkedin.com/in/salma-ayachi-1b5286387/)
